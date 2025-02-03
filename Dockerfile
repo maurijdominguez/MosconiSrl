@@ -1,30 +1,34 @@
-# 🔹 Imagen base con soporte para ODBC y Python
+# 🔹 Imagen base con Ubuntu y soporte para ODBC
 FROM ubuntu:20.04
 
-# 🔹 Definir variables de entorno para aceptar la licencia de Microsoft
+# 🔹 Aceptar la licencia de Microsoft ODBC Driver
 ENV ACCEPT_EULA=Y
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 🔹 Actualizar paquetes y agregar claves de Microsoft
+# 🔹 Actualizar paquetes e instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    curl gnupg2 apt-transport-https \
-    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && add-apt-repository "$(curl -fsSL https://packages.microsoft.com/config/ubuntu/20.04/prod.list)"
+    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst \
+    && rm -rf /var/lib/apt/lists/*
 
-# 🔹 Instalar dependencias ODBC
-RUN apt-get update && apt-get install -y \
-    unixodbc unixodbc-dev odbcinst msodbcsql17 \
+# 🔹 Agregar la clave de Microsoft para ODBC
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+# 🔹 Agregar el repositorio de Microsoft manualmente
+RUN echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
+
+# 🔹 Instalar el driver ODBC para SQL Server
+RUN apt-get update && apt-get install -y msodbcsql17 \
     && rm -rf /var/lib/apt/lists/*
 
 # 🔹 Crear y configurar el entorno de trabajo
 WORKDIR /app
 COPY . /app
 
-# 🔹 Instalar las dependencias de Python
+# 🔹 Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 🔹 Exponer el puerto de FastAPI
 EXPOSE 10000
 
-# 🔹 Comando para ejecutar FastAPI
+# 🔹 Ejecutar FastAPI en Render
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "10000"]
