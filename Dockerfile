@@ -1,23 +1,23 @@
 # 🔹 Imagen base con Ubuntu
 FROM ubuntu:20.04
 
-# 🔹 Definir variables de entorno para aceptar la licencia de Microsoft
+# 🔹 Definir variables de entorno
 ENV ACCEPT_EULA=Y
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 🔹 Actualizar paquetes e instalar dependencias necesarias
+# 🔹 Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst python3 python3-pip \
+    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst \
     && rm -rf /var/lib/apt/lists/*
 
-# 🔹 Agregar la clave de Microsoft para ODBC
+# 🔹 Agregar clave de Microsoft para los drivers antiguos
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-# 🔹 Agregar el repositorio de Microsoft manualmente
+# 🔹 Agregar el repositorio de Microsoft
 RUN echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
 
-# 🔹 Instalar el driver ODBC para SQL Server
-RUN apt-get update && apt-get install -y msodbcsql17 \
+# 🔹 Instalar driver antiguo SQL Server Native Client 11.0
+RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc \
     && rm -rf /var/lib/apt/lists/*
 
 # 🔹 Crear y configurar el entorno de trabajo
