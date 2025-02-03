@@ -7,16 +7,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 🔹 Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst \
+    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# 🔹 Agregar clave de Microsoft para los drivers antiguos
+# 🔹 Agregar clave de Microsoft para los drivers ODBC
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-# 🔹 Agregar el repositorio de Microsoft
+# 🔹 Agregar el repositorio de Microsoft para SQL Server
 RUN echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql-release.list
 
-# 🔹 Instalar driver antiguo SQL Server Native Client 11.0
+# 🔹 Instalar driver ODBC para SQL Server
 RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc \
     && rm -rf /var/lib/apt/lists/*
 
