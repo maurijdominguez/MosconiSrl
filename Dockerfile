@@ -1,7 +1,17 @@
-# 🔹 Imagen base con Python y soporte de ODBC
-FROM mcr.microsoft.com/mssql-tools
+# 🔹 Imagen base con soporte para ODBC y Python
+FROM ubuntu:20.04
 
-# 🔹 Instalar dependencias necesarias para ODBC
+# 🔹 Definir variables de entorno para aceptar la licencia de Microsoft
+ENV ACCEPT_EULA=Y
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 🔹 Actualizar paquetes y agregar claves de Microsoft
+RUN apt-get update && apt-get install -y \
+    curl gnupg2 apt-transport-https \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && add-apt-repository "$(curl -fsSL https://packages.microsoft.com/config/ubuntu/20.04/prod.list)"
+
+# 🔹 Instalar dependencias ODBC
 RUN apt-get update && apt-get install -y \
     unixodbc unixodbc-dev odbcinst msodbcsql17 \
     && rm -rf /var/lib/apt/lists/*
