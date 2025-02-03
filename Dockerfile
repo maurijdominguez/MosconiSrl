@@ -1,13 +1,13 @@
-# 🔹 Imagen base con Ubuntu y soporte para ODBC
+# 🔹 Imagen base con Ubuntu
 FROM ubuntu:20.04
 
-# 🔹 Aceptar la licencia de Microsoft ODBC Driver
+# 🔹 Definir variables de entorno para aceptar la licencia de Microsoft
 ENV ACCEPT_EULA=Y
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 🔹 Actualizar paquetes e instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst \
+    curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # 🔹 Agregar la clave de Microsoft para ODBC
@@ -24,11 +24,12 @@ RUN apt-get update && apt-get install -y msodbcsql17 \
 WORKDIR /app
 COPY . /app
 
-# 🔹 Instalar dependencias de Python
-RUN pip install --no-cache-dir -r requirements.txt
+# 🔹 Asegurar que `pip` y `uvicorn` estén instalados
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # 🔹 Exponer el puerto de FastAPI
 EXPOSE 10000
 
-# 🔹 Ejecutar FastAPI en Render
+# 🔹 Comando para ejecutar FastAPI
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "10000"]
