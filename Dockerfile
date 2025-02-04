@@ -33,3 +33,14 @@ EXPOSE 10000
 
 # 🔹 Comando para ejecutar FastAPI
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "10000"]
+
+# 🔹 Instalar dependencias necesarias para pymssql en Linux
+RUN apt-get update && apt-get install -y \
+    freetds-bin \
+    freetds-dev \
+    unixodbc \
+    unixodbc-dev \
+    gcc \
+    python3-dev \
+    libssl-dev \
+    libffi-dev
