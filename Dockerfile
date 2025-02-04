@@ -8,13 +8,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 🔹 Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
     curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst python3 python3-pip \
-    freetds-bin freetds-dev gcc python3-dev libssl-dev libffi-dev \
+    freetds-bin freetds-dev gcc python3-dev libssl-dev libffi-dev software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-# 🔹 Instalar libssl1.1 manualmente (necesaria para pymssql)
-RUN curl -fsSL http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.1/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb -o libssl1.1.deb \
-    && dpkg -i libssl1.1.deb \
-    && rm libssl1.1.deb
+# 🔹 Agregar soporte para paquetes antiguos de Ubuntu
+RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu focal-security main" && \
+    apt-get update && apt-get install -y libssl1.1
 
 # 🔹 Agregar clave de Microsoft para los drivers ODBC
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
