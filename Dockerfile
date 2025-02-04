@@ -11,6 +11,11 @@ RUN apt-get update && apt-get install -y \
     freetds-bin freetds-dev gcc python3-dev libssl-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# 🔹 Instalar libssl1.1 manualmente (necesaria para pymssql)
+RUN curl -fsSL http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.1/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb -o libssl1.1.deb \
+    && dpkg -i libssl1.1.deb \
+    && rm libssl1.1.deb
+
 # 🔹 Agregar clave de Microsoft para los drivers ODBC
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
