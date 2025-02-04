@@ -14,7 +14,7 @@ DRIVER = "{ODBC Driver 11 for SQL Server}"
 
 def conectar_sql():
     conexion = pyodbc.connect(
-        f"DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};Encrypt=yes;TrustServerCertificate=yes;TLS_VERSION=TLSv1"
+        f"DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};Encrypt=no;TrustServerCertificate=yes"
     )
     return conexion
 
