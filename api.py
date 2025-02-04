@@ -10,11 +10,11 @@ SERVER = "ts.mosconi.com.ar,50001"
 DATABASE = "em360"
 USERNAME = "em360_consulta"
 PASSWORD = "Lsinet20*1"
-DRIVER = "{ODBC Driver 17 for SQL Server}"
+DRIVER = "{ODBC Driver 11 for SQL Server}"
 
 def conectar_sql():
     conexion = pyodbc.connect(
-        f"DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};Encrypt=no;TrustServerCertificate=yes"
+        f"DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};Encrypt=yes;TrustServerCertificate=yes;TLS_VERSION=TLSv1"
     )
     return conexion
 
