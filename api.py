@@ -1,8 +1,6 @@
 from fastapi import FastAPI
-import pyodbc
-import pandas as pd
+import pymssql  # 🔹 Usar pymssql en lugar de pyodbc
 
-# Configurar FastAPI
 app = FastAPI()
 
 # Configuración de conexión a SQL Server
@@ -10,23 +8,26 @@ SERVER = "ts.mosconi.com.ar,50001"
 DATABASE = "em360"
 USERNAME = "em360_consulta"
 PASSWORD = "Lsinet20*1"
-DRIVER = "{ODBC Driver 11 for SQL Server}"
 
 def conectar_sql():
-    conexion = pyodbc.connect(
-        f"DRIVER={DRIVER};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD};Encrypt=no;TrustServerCertificate=yes"
+    conexion = pymssql.connect(
+        server=SERVER,
+        user=USERNAME,
+        password=PASSWORD,
+        database=DATABASE,
+        as_dict=True  # 🔹 Para devolver resultados como diccionario
     )
     return conexion
 
-# Endpoint para obtener datos de SQL Server
 @app.get("/datos")
 def obtener_datos():
     try:
         conexion = conectar_sql()
-        query = "SELECT * FROM audiusua"  # Modifica con tu consulta
-        df = pd.read_sql(query, conexion)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM audiusua")  # Modifica con tu consulta
+        datos = cursor.fetchall()
         conexion.close()
-        return df.to_dict(orient="records")  # Convertir a JSON
+        return datos
     except Exception as e:
         return {"error": str(e)}
 
