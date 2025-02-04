@@ -8,6 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 🔹 Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
     curl gnupg2 apt-transport-https ca-certificates unixodbc unixodbc-dev odbcinst python3 python3-pip \
+    freetds-bin freetds-dev gcc python3-dev libssl-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 🔹 Agregar clave de Microsoft para los drivers ODBC
@@ -26,6 +27,8 @@ COPY . /app
 
 # 🔹 Asegurar que `pip` y `uvicorn` estén instalados
 RUN python3 -m pip install --upgrade pip
+
+# 🔹 Instalar las dependencias de Python (pymssql incluido)
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # 🔹 Exponer el puerto de FastAPI
@@ -33,14 +36,3 @@ EXPOSE 10000
 
 # 🔹 Comando para ejecutar FastAPI
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "10000"]
-
-# 🔹 Instalar dependencias necesarias para pymssql en Linux
-RUN apt-get update && apt-get install -y \
-    freetds-bin \
-    freetds-dev \
-    unixodbc \
-    unixodbc-dev \
-    gcc \
-    python3-dev \
-    libssl-dev \
-    libffi-dev
