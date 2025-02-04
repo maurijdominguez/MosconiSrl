@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import pymssql  # 🔹 Usar pymssql en lugar de pyodbc
+import pyodbc  # 🔹 Usamos ODBC en lugar de pymssql
 
 app = FastAPI()
 
@@ -10,12 +10,8 @@ USERNAME = "em360_consulta"
 PASSWORD = "Lsinet20*1"
 
 def conectar_sql():
-    conexion = pymssql.connect(
-        server=SERVER,
-        user=USERNAME,
-        password=PASSWORD,
-        database=DATABASE,
-        as_dict=True  # 🔹 Para devolver resultados como diccionario
+    conexion = pyodbc.connect(
+        f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}"
     )
     return conexion
 
@@ -24,13 +20,9 @@ def obtener_datos():
     try:
         conexion = conectar_sql()
         cursor = conexion.cursor()
-        cursor.execute("SELECT * FROM audiusua")  # Modifica con tu consulta
+        cursor.execute("SELECT * FROM audiusua")  # 🔹 Cambia por tu consulta
         datos = cursor.fetchall()
         conexion.close()
-        return datos
+        return [dict(zip([column[0] for column in cursor.description], row)) for row in datos]
     except Exception as e:
         return {"error": str(e)}
-
-@app.get("/")
-def read_root():
-    return {"message": "¡API funcionando correctamente!"}
